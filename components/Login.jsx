@@ -1,7 +1,30 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, StatusBar, ImageBackground, Image, TouchableHighlight, ImageComponent, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, StatusBar, ImageBackground, TextInput, TouchableHighlight, Image, Modal } from 'react-native';
 
-const Login = (props) =>{
+const Login = (props) => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [showModal, setShowModal] = useState(false);
+
+    useEffect(()=>{
+        setError('');
+        setUsername('');
+        setPassword('');
+    }, [])
+
+    const handleLogin = () => {
+        if (username === "demo" && password === "demo") {
+            // Navigate to appropriate screen on successful login
+            props.navigation.navigate('Profile'); // Change 'Home' to the correct screen name
+        } else {
+            setShowModal(true);
+            setError("Invalid username or password");
+            setUsername('');
+            setPassword('');
+        }
+    }
+
     return (
         <View style={styles.main}>
             <StatusBar backgroundColor='black' barStyle='default' hidden={true} />
@@ -12,19 +35,36 @@ const Login = (props) =>{
                         <Text style={styles.heading}>meet you again</Text>
                     </View>
                     <View style={styles.row}>
-                        <TextInput placeholder='Your name' style={styles.textInput} placeholderTextColor="grey"></TextInput>
-                        <TextInput placeholder='Password' style={styles.textInput} placeholderTextColor="grey" secureTextEntry={true}></TextInput>
+                        <TextInput
+                            placeholder='Username'
+                            style={styles.textInput}
+                            placeholderTextColor="grey"
+                            value={username}
+                            onChangeText={(text) => setUsername(text)}
+                        />
+                        <TextInput
+                            placeholder='Password'
+                            style={styles.textInput}
+                            placeholderTextColor="grey"
+                            secureTextEntry={true}
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
+                        />
                     </View>
-                    <View style={{padding:20}}>
-                        <Text style={{color: '#fff', textAlign: 'right', fontSize:17, marginRight:20}}>Forgot Password</Text>
+                    <View style={{ padding: 20 }}>
+                        <Text style={{ color: '#fff', textAlign: 'right', fontSize: 17, marginRight: 20 }}>Forgot Password</Text>
                     </View>
-                    <TouchableHighlight style={styles.btns}>
+                    <TouchableHighlight
+                        style={styles.btns}
+                        underlayColor="transparent"
+                        onPress={handleLogin}
+                    >
                         <View style={[styles.button, styles.loginBtn]}>
                             <Text style={styles.btnText}>Login Now</Text>
                         </View>
                     </TouchableHighlight>
                     <Text style={{ color: 'white', textAlign: 'center', fontSize: 20 }}>Or</Text>
-                    <TouchableHighlight style={styles.btns}>
+                    <TouchableHighlight style={styles.btns} underlayColor="transparent">
                         <View style={[styles.button, styles.googleBtn]}>
                             <View style={styles.btnIconGBg}>
                                 <Image style={styles.googleLogo} source={require('../images/icons/Google.png')} />
@@ -33,14 +73,27 @@ const Login = (props) =>{
                         </View>
                     </TouchableHighlight>
                     <View style={styles.signUpText}>
-                        <Text style={styles.lasttxt}>Don't have an account?</Text> 
+                        <Text style={styles.lasttxt}>Don't have an account?</Text>
                         <Text style={styles.signupTxt} onPress={() => props.navigation.navigate('Signup')}>SignUp</Text>
                     </View>
                 </View>
             </ImageBackground>
-
+            <Modal transparent={true} visible={showModal} animationType='slide'>
+                <View style={styles.centeredView}>
+                    <View style={styles.ModalView}>
+                        <Text style={styles.modalText}>{error}</Text>
+                        <TouchableHighlight
+                            style={styles.modalButton}
+                            underlayColor="transparent"
+                            onPress={() => setShowModal(false)}
+                        >
+                            <Text style={{ color: 'white' }}>Close Modal</Text>
+                        </TouchableHighlight>
+                    </View>
+                </View>
+            </Modal>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -108,7 +161,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '700'
     },
-    btnGText:{
+    btnGText: {
         color: 'black',
         fontSize: 20,
         fontWeight: '700',
@@ -116,26 +169,61 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     googleBtn: {
-        padding:20,
+        padding: 20,
         fontSize: 24,
         alignItems: 'center',
     },
-    signUpText:{
+    signUpText: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    lasttxt:{
+    lasttxt: {
         color: '#7d7d7d',
         fontSize: 18,
     },
-    signupTxt:{
+    signupTxt: {
         color: '#a26ffc',
         fontSize: 18,
-        marginLeft:10
+        marginLeft: 10
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
+    ModalView: {
+        margin: 20,
+        backgroundColor: '#000',
+        borderRadius: 20,
+        borderWidth:5,
+        borderColor:'#a26ffc',
+        padding: 35,
+        width:'80%',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+        fontSize:20,
+        color: 'white'
+    },
+    modalButton: {
+        backgroundColor: '#a26ffc',
+        borderRadius: 20,
+        padding: 15,
+        elevation: 2
     }
-
 });
 
 export default Login;
